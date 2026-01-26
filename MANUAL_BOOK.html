@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Panduan Sistem ERP CV. BDB</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Mermaid JS for Flowcharts -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        .prose h2 {
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .mermaid {
+            background-color: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+    <div class="max-w-4xl mx-auto bg-white min-h-screen shadow-lg p-8 md:p-12 my-8 rounded-xl">
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-blue-800 mb-2">Buku Panduan Sistem ERP</h1>
+            <p class="text-xl text-gray-600 font-semibold">CV. Berkah Doa Bunda</p>
+            <p class="text-sm text-gray-400 mt-2">Dibuat Otomatis pada 10 Desember 2025</p>
+        </header>
+
+        <div class="prose prose-blue max-w-none">
+            <p class="lead text-lg">
+                Dokumen ini adalah panduan resmi penggunaan sistem ERP CV. Berkah Doa Bunda. Panduan ini mencakup
+                penjelasan istilah, hak akses pengguna, alur kerja sistem (flowchart), dan panduan teknis per modul.
+            </p>
+
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6">
+                <p class="font-bold text-yellow-700">TIPS:</p>
+                <p>Klik kanan pada gambar diagram alur dan pilih "Open Image in New Tab" jika ingin melihat lebih besar.
+                </p>
+            </div>
+
+            <!-- SECTION 1 -->
+            <h2 class="text-2xl font-bold text-gray-800">1. Glosarium & Istilah Penting</h2>
+            <div class="overflow-x-auto my-4">
+                <table class="min-w-full bg-white border border-gray-300">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-2 px-4 border text-left">Istilah</th>
+                            <th class="py-2 px-4 border text-left">Kepanjangan</th>
+                            <th class="py-2 px-4 border text-left">Penjelasan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr>
+                            <td class="border px-4 py-2 font-bold">SO</td>
+                            <td class="border px-4 py-2">Special Order</td>
+                            <td class="border px-4 py-2">Pesanan khusus dari pelanggan untuk produk custom/non-stok.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2 font-bold">SPK</td>
+                            <td class="border px-4 py-2">Surat Perintah Kerja</td>
+                            <td class="border px-4 py-2">Perintah produksi. Tipe: <b>Barang Jadi</b> (Finale) &
+                                <b>Setengah Jadi</b> (Base).</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2 font-bold">FPB</td>
+                            <td class="border px-4 py-2">Form Permintaan Barang</td>
+                            <td class="border px-4 py-2">Bukti pengambilan bahan baku dari gudang ke produksi.</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2 font-bold">SJ</td>
+                            <td class="border px-4 py-2">Surat Jalan (Delivery Note)</td>
+                            <td class="border px-4 py-2">Dokumen pengantar barang. Wajib dibawa saat pengiriman.</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2 font-bold">Invoice</td>
+                            <td class="border px-4 py-2">Invoice / Tagihan</td>
+                            <td class="border px-4 py-2">Dokumen penagihan pembayaran. Dibuat setelah barang terkirim
+                                (Delivered).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SECTION 2 -->
+            <h2 class="text-2xl font-bold text-gray-800">2. Manajemen Pengguna (Hak Akses)</h2>
+            <p>Siapa yang boleh melakukan apa?</p>
+
+            <div class="overflow-x-auto my-4">
+                <table class="min-w-full bg-white border border-gray-300">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="py-3 px-4 border text-left">Fitur / Aksi</th>
+                            <th class="py-3 px-4 border text-center">👑 Owner</th>
+                            <th class="py-3 px-4 border text-center">💰 Finance</th>
+                            <th class="py-3 px-4 border text-center">🏭 Operasional</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <!-- Inventory -->
+                        <tr class="bg-gray-50">
+                            <td colspan="4" class="px-4 py-1 font-bold text-gray-600">INVENTORY</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2">Melihat Stok</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2">Edit Item/Stok</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                        </tr>
+
+                        <!-- SPK -->
+                        <tr class="bg-gray-50">
+                            <td colspan="4" class="px-4 py-1 font-bold text-gray-600">PRODUKSI (SPK)</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2">Buat SPK</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2 font-bold">Approval SPK</td>
+                            <td class="border px-4 py-2 text-center text-green-600 font-bold">✅ WAJIB</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                        </tr>
+
+                        <!-- Surat Jalan -->
+                        <tr class="bg-gray-50">
+                            <td colspan="4" class="px-4 py-1 font-bold text-gray-600">PENGIRIMAN (SJ)</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2">Buat Surat Jalan</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                            <td class="border px-4 py-2 text-center text-yellow-500">⚠️ (Bantu)</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2 font-bold">Approval SJ</td>
+                            <td class="border px-4 py-2 text-center text-green-600 font-bold">✅ WAJIB</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2">Set "Delivered"</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                        </tr>
+
+                        <!-- Invoice -->
+                        <tr class="bg-gray-50">
+                            <td colspan="4" class="px-4 py-1 font-bold text-gray-600">INVOICE</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2">Buat Invoice</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2 font-bold">Approval Invoice</td>
+                            <td class="border px-4 py-2 text-center text-green-600 font-bold">✅ WAJIB</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                        </tr>
+                        <tr>
+                            <td class="border px-4 py-2">Reject Invoice</td>
+                            <td class="border px-4 py-2 text-center text-green-600">✅</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                            <td class="border px-4 py-2 text-center text-red-400">❌</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SECTION 3: FLOWCHARTS -->
+            <h2 class="text-2xl font-bold text-gray-800">3. Alur Kerja Sistem (Flowchart)</h2>
+            <p class="mb-4">Berikut adalah diagram alur proses bisnis di CV. BDB:</p>
+
+            <h3 class="text-xl font-semibold text-blue-700 mt-6 mb-2">A. Alur Produksi Regular (Make to Stock)</h3>
+            <p class="text-sm text-gray-500 mb-2">Untuk mengisi stok gudang tanpa menunggu orderan.</p>
+
+            <div class="mermaid">
+                graph TD
+                Start((Mulai)) --> CekStok[1. Cek Stok Barang]
+                CekStok --> |Stok Menipis| BuatSPK[2. Operasional Buat SPK]
+                BuatSPK --> Note1[/Tipe: Barang Jadi / Setengah Jadi/]
+                BuatSPK --> AppSPK{3. Owner Approval?}
+
+                AppSPK -- Ditolak --> Revisi[Revisi / Cancel]
+                AppSPK -- Disetujui --> PrintSPK[4. Print SPK]
+
+                PrintSPK --> BuatFPB[5. Buat Form Permintaan Barang]
+                BuatFPB --> AmbilBahan[6. Gudang Siapkan Bahan]
+                AmbilBahan --> Produksi[7. Proses Produksi]
+
+                Produksi --> SelesaiSPK[8. Tandai SPK Selesai]
+                SelesaiSPK --> StokUpdate[Stok Barang Jadi Bertambah]
+                StokUpdate --> End((Selesai))
+
+                classDef owner fill:#f9f,stroke:#333;
+                classDef op fill:#cfc,stroke:#333;
+                classDef fin fill:#bbf,stroke:#333;
+
+                class AppSPK owner;
+                class BuatSPK,CekStok,BuatFPB,Produksi,SelesaiSPK op;
+            </div>
+
+            <h3 class="text-xl font-semibold text-blue-700 mt-8 mb-2">B. Alur Pesanan Khusus (Make to Order)</h3>
+            <p class="text-sm text-gray-500 mb-2">Siklus lengkap dari Pesanan Customer sampai Pembayaran.</p>
+
+            <div class="mermaid">
+                graph TD
+                Cust[Customer Order] --> InputSO[1. Finance Input Special Order]
+                InputSO --> BuatSPK[2. Klik 'Buat SPK' dari SO]
+                BuatSPK --> AppSPK{3. Owner Approval?}
+
+                AppSPK -- Yes --> Produksi[4. Proses Produksi & FPB]
+                Produksi --> BarangReady[Barang Jadi Siap]
+
+                BarangReady --> BuatSJ[5. Finance Buat Surat Jalan]
+                BuatSJ --> AppSJ{6. Owner Approve SJ?}
+
+                AppSJ -- Yes --> Kirim[7. Pengiriman Barang]
+                Kirim --> SetDelivered[8. Operasional Set 'Delivered']
+
+                SetDelivered --> BuatInv[9. Finance Buat Invoice]
+                BuatInv --> NoteInv[/Tarik Data dari SJ/]
+                BuatInv --> AppInv{10. Owner Approve Invoice?}
+
+                AppInv -- Reject --> ResetSJ[Reset Status SJ]
+                ResetSJ --> BuatInv
+
+                AppInv -- Approve --> KirimInv[Kirim Invoice ke Customer]
+                KirimInv --> Bayar[11. Catat Pembayaran]
+                Bayar --> End((Selesai))
+
+                classDef owner fill:#f9f,stroke:#333;
+                classDef op fill:#cfc,stroke:#333;
+                classDef fin fill:#bbf,stroke:#333;
+
+                class AppSPK,AppSJ,AppInv owner;
+                class InputSO,BuatSJ,BuatInv,Bayar fin;
+                class SetDelivered,Produksi op;
+            </div>
+
+            <!-- SECTION 4 -->
+            <h2 class="text-2xl font-bold text-gray-800">4. Panduan Fitur Per Modul</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <!-- Modul Item -->
+                <div class="bg-blue-50 p-6 rounded-lg border border-blue-100">
+                    <h3 class="font-bold text-blue-800 text-lg mb-2">📦 Inventory</h3>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Fungsi: Melihat stok real-time.</li>
+                        <li>Jangan edit stok manual kecuali Stock Opname.</li>
+                        <li>Gunakan alur SPK agar stok bahan baku berkurang otomatis.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
+                    <h3 class="font-bold text-indigo-800 text-lg mb-2">📝 SPK (Produksi)</h3>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><b>Target:</b> Tentukan produk yang mau dibuat.</li>
+                        <li><b>Planned Qty:</b> Jumlah rencana produksi.</li>
+                        <li>Status <i>Planned</i> akan mem-booking stok bahan baku.</li>
+                        <li>Hanya Owner yang bisa Approve.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-purple-50 p-6 rounded-lg border border-purple-100">
+                    <h3 class="font-bold text-purple-800 text-lg mb-2">🚚 Surat Jalan</h3>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Syarat: Barang sudah ada di stok (hasil SPK).</li>
+                        <li>Alur: Draft -> Approved (Owner) -> Delivered (Supir/Op).</li>
+                        <li>Hanya Surat Jalan berstatus <b>Delivered</b> yang bisa ditagihkan (Invoice).</li>
+                    </ul>
+                </div>
+
+                <div class="bg-pink-50 p-6 rounded-lg border border-pink-100">
+                    <h3 class="font-bold text-pink-800 text-lg mb-2">💰 Invoice</h3>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><b>Cara Buat:</b> Cari Surat Jalan di menu "Buat Invoice".</li>
+                        <li><b>Edit:</b> Tombol Edit (Kuning) muncul jika belum di-Approve.</li>
+                        <li><b>Reject:</b> Jika Owner menolak, Surat Jalan bisa dipakai lagi untuk buat Invoice baru.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            mermaid.initialize({ startOnLoad: true });
+        </script>
+    </div>
+</body>
+
+</html>
