@@ -354,12 +354,10 @@
                 <span>SUBTOTAL</span>
                 <span>Rp {{ number_format((float) $purchase->subtotal, 0, ',', '.') }}</span>
             </div>
-            @if((float) $purchase->tax > 0)
-                <div class="summary-row">
-                    <span>PPN ({{ number_format((float) $purchase->tax_percentage, 0) }}%)</span>
-                    <span>Rp {{ number_format((float) $purchase->tax, 0, ',', '.') }}</span>
-                </div>
-            @endif
+            <div class="summary-row">
+                <span>PPN ({{ number_format((float) $purchase->tax_percentage, 0) }}%)</span>
+                <span>Rp {{ number_format((float) $purchase->tax, 0, ',', '.') }}</span>
+            </div>
             @if((float) $purchase->discount > 0)
                 <div class="summary-row">
                     <span>DISKON</span>

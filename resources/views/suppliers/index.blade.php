@@ -1,6 +1,28 @@
 <x-app-layout>
     @section('title', 'Daftar Supplier')
 
+    <style>
+        @media (min-width: 768px) {
+            #supplier-mobile-view {
+                display: none !important;
+            }
+
+            #supplier-desktop-view {
+                display: block !important;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            #supplier-mobile-view {
+                display: grid !important;
+            }
+
+            #supplier-desktop-view {
+                display: none !important;
+            }
+        }
+    </style>
+
     <!-- Filters -->
     <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 mb-4">
         <form method="GET" class="flex flex-wrap items-end gap-3">
@@ -29,8 +51,59 @@
             class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Tambah Supplier</a>
     </div>
 
-    <!-- Table -->
-    <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+    <!-- Mobile Card View (Protected) -->
+    <div id="supplier-mobile-view" class="grid grid-cols-1 gap-4 md:hidden">
+        @forelse($suppliers as $supplier)
+            <div class="bg-white dark:bg-zinc-900 p-4 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <div class="font-bold text-zinc-900 dark:text-white">{{ $supplier->name }}</div>
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $supplier->code }}</div>
+                    </div>
+                    @if($supplier->is_active)
+                        <span
+                            class="px-2 py-1 text-xs rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">Aktif</span>
+                    @else
+                        <span
+                            class="px-2 py-1 text-xs rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">Nonaktif</span>
+                    @endif
+                </div>
+
+                <div class="space-y-2 text-sm mb-4">
+                    <div class="flex justify-between">
+                        <span class="text-zinc-500 dark:text-zinc-400">Kontak:</span>
+                        <span
+                            class="font-medium text-zinc-900 dark:text-white">{{ $supplier->contact_person ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-500 dark:text-zinc-400">Telepon:</span>
+                        <span class="font-medium text-zinc-900 dark:text-white">{{ $supplier->phone ?? '-' }}</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+                    @if($supplier->uuid)
+                        <a href="{{ route('suppliers.show', $supplier) }}"
+                            class="px-3 py-1.5 text-xs bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-md">
+                            Detail
+                        </a>
+                        <a href="{{ route('suppliers.edit', $supplier) }}"
+                            class="px-3 py-1.5 text-xs bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400 rounded-md">
+                            Edit
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @empty
+            <div class="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                Tidak ada supplier.
+            </div>
+        @endforelse
+    </div>
+
+    <!-- Desktop Table View (Protected) -->
+    <div id="supplier-desktop-view"
+        class="hidden md:block bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
@@ -106,10 +179,10 @@
                 </tbody>
             </table>
         </div>
-        @if($suppliers->hasPages())
-            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
-                {{ $suppliers->links() }}
-            </div>
-        @endif
     </div>
+    @if($suppliers->hasPages())
+        <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
+            {{ $suppliers->links() }}
+        </div>
+    @endif
 </x-app-layout>

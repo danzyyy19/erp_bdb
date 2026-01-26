@@ -60,6 +60,7 @@ class SpkController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'html' => view('spk.partials.spk-table', compact('spks'))->render(),
+                'mobile_html' => view('spk.partials.spk-cards', compact('spks'))->render(),
                 'pagination' => $spks->links()->toHtml(),
             ]);
         }

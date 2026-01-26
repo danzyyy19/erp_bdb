@@ -142,6 +142,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{purchase}/reject', [App\Http\Controllers\PurchaseController::class, 'reject'])->name('reject');
         Route::post('/{purchase}/receive', [App\Http\Controllers\PurchaseController::class, 'receive'])->name('receive');
         Route::get('/{purchase}/print', [App\Http\Controllers\PurchaseController::class, 'print'])->name('print');
+        Route::delete('/{purchase}', [App\Http\Controllers\PurchaseController::class, 'destroy'])->name('destroy');
     });
 
 

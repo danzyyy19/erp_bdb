@@ -78,8 +78,9 @@
             </div>
         </div>
 
-        <!-- FPB Table -->
-        <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+        <!-- Desktop Table -->
+        <div
+            class="hidden md:block bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-zinc-50 dark:bg-zinc-800">
@@ -119,10 +120,11 @@
                                     <span class="text-zinc-600 dark:text-zinc-400">{{ $fpb->items->count() }} item</span>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="px-2 py-1 text-xs font-medium rounded-full
-                                            @if($fpb->status === 'pending') bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400
-                                            @elseif($fpb->status === 'approved') bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400
-                                            @else bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 @endif">
+                                    <span
+                                        class="px-2 py-1 text-xs font-medium rounded-full
+                                                    @if($fpb->status === 'pending') bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400
+                                                    @elseif($fpb->status === 'approved') bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400
+                                                    @else bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 @endif">
                                         {{ $fpb->status_label }}
                                     </span>
                                 </td>
@@ -163,11 +165,78 @@
                     </tbody>
                 </table>
             </div>
-            @if($fpbs->hasPages())
-                <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">
-                    {{ $fpbs->links() }}
-                </div>
-            @endif
         </div>
+
+        <!-- Mobile Grid -->
+        <div class="grid grid-cols-1 gap-4 md:hidden">
+            @forelse($fpbs as $fpb)
+                <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 shadow-sm">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <a href="{{ route('fpb.show', $fpb) }}" class="font-medium text-blue-600 dark:text-blue-400">
+                                {{ $fpb->fpb_number }}
+                            </a>
+                            <div class="text-xs text-zinc-500 mt-1">
+                                {{ $fpb->request_date->format('d M Y') }}
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 text-xs font-medium rounded-full
+                                        @if($fpb->status === 'pending') bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400
+                                        @elseif($fpb->status === 'approved') bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400
+                                        @else bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 @endif">
+                            {{ $fpb->status_label }}
+                        </span>
+                    </div>
+
+                    <div class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+                        <div class="flex justify-between">
+                            <span>SPK Referensi:</span>
+                            @if($fpb->spk)
+                                <a href="{{ route('spk.show', $fpb->spk) }}" class="text-blue-600 hover:underline">
+                                    {{ $fpb->spk->spk_number }}
+                                </a>
+                            @else
+                                <span>-</span>
+                            @endif
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total Item:</span>
+                            <span class="font-medium text-zinc-900 dark:text-white">{{ $fpb->items->count() }} item</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Dibuat Oleh:</span>
+                            <span>{{ $fpb->creator?->name ?? '-' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-2">
+                        <a href="{{ route('fpb.print', $fpb) }}" target="_blank"
+                            class="px-3 py-1.5 text-xs bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 rounded hover:bg-zinc-200">
+                            Print
+                        </a>
+                        <a href="{{ route('fpb.show', $fpb) }}"
+                            class="px-3 py-1.5 text-xs bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded hover:bg-blue-100">
+                            Detail
+                        </a>
+                    </div>
+                </div>
+            @empty
+                <div
+                    class="text-center p-8 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500">
+                    <div class="flex flex-col items-center gap-2">
+                        <i data-lucide="file-x" class="w-8 h-8 text-zinc-300"></i>
+                        <span>Belum ada FPB</span>
+                    </div>
+                    <a href="{{ route('fpb.create') }}" class="text-blue-600 hover:underline text-sm mt-2 block">Buat FPB
+                        baru</a>
+                </div>
+            @endforelse
+        </div>
+        @if($fpbs->hasPages())
+            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">
+                {{ $fpbs->links() }}
+            </div>
+        @endif
     </div>
+
 </x-app-layout>

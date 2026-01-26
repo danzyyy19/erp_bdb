@@ -1,6 +1,28 @@
 <x-app-layout>
     @section('title', 'Daftar SPK')
 
+    <style>
+        @media (min-width: 768px) {
+            #spk-mobile-view {
+                display: none !important;
+            }
+
+            #spk-desktop-view {
+                display: block !important;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            #spk-mobile-view {
+                display: grid !important;
+            }
+
+            #spk-desktop-view {
+                display: none !important;
+            }
+        }
+    </style>
+
     <!-- Filters -->
     <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 mb-4"
         x-data="spkFilter()">
@@ -57,8 +79,14 @@
         </div>
     @endif
 
-    <!-- Table -->
-    <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+    <!-- Mobile Card View (Protected by Hard CSS) -->
+    <div id="spk-mobile-view" class="grid grid-cols-1 gap-4 mb-6 md:hidden">
+        @include('spk.partials.spk-cards')
+    </div>
+
+    <!-- Desktop Table View (Protected by Hard CSS) -->
+    <div id="spk-desktop-view"
+        class="hidden md:block bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
@@ -91,15 +119,15 @@
                 </tbody>
             </table>
         </div>
-        @if($spks->hasPages())
-            <div id="pagination"
-                class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
-                {{ $spks->links() }}
-            </div>
-        @else
-            <div id="pagination" class="hidden"></div>
-        @endif
     </div>
+
+    @if($spks->hasPages())
+        <div id="pagination" class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
+            {{ $spks->links() }}
+        </div>
+    @else
+        <div id="pagination" class="hidden"></div>
+    @endif
 
     @push('scripts')
         <script>
@@ -129,6 +157,8 @@
                             .then(response => response.json())
                             .then(data => {
                                 document.getElementById('table-body').innerHTML = data.html;
+                                // Fix: Target the new mobile ID
+                                document.getElementById('spk-mobile-view').innerHTML = data.mobile_html;
                                 document.getElementById('pagination').innerHTML = data.pagination || '';
                                 if (data.pagination) {
                                     document.getElementById('pagination').classList.remove('hidden');

@@ -1,6 +1,28 @@
 <x-app-layout>
     @section('title', 'Daftar Invoice')
 
+    <style>
+        @media (min-width: 768px) {
+            #invoice-mobile-view {
+                display: none !important;
+            }
+
+            #invoice-desktop-view {
+                display: block !important;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            #invoice-mobile-view {
+                display: grid !important;
+            }
+
+            #invoice-desktop-view {
+                display: none !important;
+            }
+        }
+    </style>
+
     <div class="space-y-4" x-data="invoiceTable()">
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -38,8 +60,14 @@
             </select>
         </div>
 
-        <!-- Table -->
-        <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+        <!-- Mobile Cards (Protected) -->
+        <div id="invoice-mobile-view" class="grid grid-cols-1 gap-4 md:hidden">
+            @include('invoice.partials.invoice-mobile-cards', ['invoices' => $invoices])
+        </div>
+
+        <!-- Desktop Table (Protected) -->
+        <div id="invoice-desktop-view"
+            class="hidden md:block bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
@@ -73,15 +101,13 @@
                 </table>
             </div>
 
-            @if($invoices->hasPages())
-                <div id="pagination-container"
-                    class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
-                    {{ $invoices->links() }}
-                </div>
-            @else
-                <div id="pagination-container" class="hidden"></div>
-            @endif
         </div>
+
+        @if($invoices->hasPages())
+            <div id="pagination-container" class="mt-4">
+                {{ $invoices->links() }}
+            </div>
+        @endif
     </div>
 
     @push('scripts')
@@ -104,6 +130,13 @@
                                 const parser = new DOMParser();
                                 const doc = parser.parseFromString(html, 'text/html');
                                 document.getElementById('invoice-table-body').innerHTML = doc.getElementById('invoice-table-body').innerHTML;
+
+                                // Update Mobile Grid ID
+                                const mobileGrid = doc.getElementById('invoice-mobile-view');
+                                if (mobileGrid) {
+                                    document.getElementById('invoice-mobile-view').innerHTML = mobileGrid.innerHTML;
+                                }
+
                                 const paginationEl = doc.getElementById('pagination-container');
                                 document.getElementById('pagination-container').innerHTML = paginationEl ? paginationEl.innerHTML : '';
                                 if (window.lucide) lucide.createIcons();

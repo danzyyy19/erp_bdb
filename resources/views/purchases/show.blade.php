@@ -107,7 +107,7 @@
                         <td colspan="3" class="px-4 py-2 text-right text-sm text-zinc-600 dark:text-zinc-400">PPN
                             ({{ $purchase->tax_percentage }}%)</td>
                         <td class="px-4 py-2 text-right font-medium text-zinc-900 dark:text-white">Rp
-                            {{ number_format($purchase->tax_amount, 0, ',', '.') }}
+                            {{ number_format($purchase->tax, 0, ',', '.') }}
                         </td>
                     </tr>
                     <tr>
@@ -128,6 +128,13 @@
 
             <div class="flex gap-2">
                 @if($purchase->status === 'draft')
+                    <form action="{{ route('purchases.destroy', $purchase) }}" method="POST"
+                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus PO ini?');" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg">Hapus</button>
+                    </form>
                     <a href="{{ route('purchases.edit', $purchase) }}"
                         class="px-4 py-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg">Edit</a>
                     <form action="{{ route('purchases.submit', $purchase) }}" method="POST">

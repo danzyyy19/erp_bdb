@@ -33,7 +33,8 @@
                     <option value="">Semua</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}</option>
+                            {{ $category->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -44,7 +45,64 @@
         </form>
     </div>
 
-    <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+    <!-- Mobile Card View -->
+
+
+    <!-- Mobile Card View -->
+    <!-- Mobile Card View -->
+    <div class="grid grid-cols-1 gap-4 md:hidden mb-6">
+        @forelse($products as $product)
+            <div class="bg-white dark:bg-zinc-900 p-4 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <div class="font-bold text-zinc-900 dark:text-white">{{ $product->name }}</div>
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400 font-mono">{{ $product->code }}</div>
+                    </div>
+                    @if($product->isLowStock())
+                        <span
+                            class="px-2 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">Rendah</span>
+                    @else
+                        <span
+                            class="px-2 py-1 text-xs rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">Aman</span>
+                    @endif
+                </div>
+
+                <div class="space-y-2 text-sm mb-4">
+                    <div class="flex justify-between">
+                        <span class="text-zinc-500 dark:text-zinc-400">Kategori:</span>
+                        <span class="font-medium text-zinc-900 dark:text-white">{{ $product->category->name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-500 dark:text-zinc-400">Stok:</span>
+                        <span
+                            class="font-bold {{ $product->isLowStock() ? 'text-red-600 dark:text-red-400' : 'text-zinc-900 dark:text-white' }}">
+                            {{ number_format($product->current_stock, 0) }} {{ $product->unit }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-500 dark:text-zinc-400">Min. Stok:</span>
+                        <span
+                            class="font-medium text-zinc-900 dark:text-white">{{ number_format($product->min_stock, 0) }}</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+                    <a href="{{ route('inventory.show', $product) }}"
+                        class="px-3 py-1.5 text-xs bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-md">
+                        Detail
+                    </a>
+                </div>
+            </div>
+        @empty
+            <div class="text-center p-8 text-zinc-500 dark:text-zinc-400">
+                Tidak ada produk.
+            </div>
+        @endforelse
+    </div>
+
+    <!-- Desktop Table View -->
+    <div
+        class="hidden md:block bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-zinc-50 dark:bg-zinc-800/50">
@@ -66,9 +124,11 @@
                             <td class="px-4 py-4 text-zinc-600 dark:text-zinc-400">{{ $product->category->name }}</td>
                             <td
                                 class="px-4 py-4 text-right {{ $product->isLowStock() ? 'text-red-600 dark:text-red-400 font-medium' : 'text-zinc-900 dark:text-white' }}">
-                                {{ number_format($product->current_stock, 0) }} {{ $product->unit }}</td>
+                                {{ number_format($product->current_stock, 0) }} {{ $product->unit }}
+                            </td>
                             <td class="px-4 py-4 text-right text-zinc-600 dark:text-zinc-400">
-                                {{ number_format($product->min_stock, 0) }}</td>
+                                {{ number_format($product->min_stock, 0) }}
+                            </td>
                             <td class="px-4 py-4">
                                 @if($product->isLowStock())
                                     <span
@@ -93,8 +153,9 @@
                 </tbody>
             </table>
         </div>
-        @if($products->hasPages())
-            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">{{ $products->links() }}</div>
-        @endif
     </div>
+    @if($products->hasPages())
+        <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">{{ $products->links() }}</div>
+    @endif
+
 </x-app-layout>

@@ -66,50 +66,94 @@
                     <h3 class="font-semibold text-sm text-zinc-900 dark:text-white mb-4">Output (Barang Jadi) *</h3>
                     <div class="space-y-2">
                         <template x-for="(item, index) in outputItems" :key="'out-'+index">
-                            <div class="flex gap-2 items-start p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
+                            <div
+                                class="flex flex-col md:flex-row gap-3 items-start p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700 md:border-none">
                                 <!-- Product Select -->
-                                <div class="flex-1 relative" @click.away="item.showDropdown = false">
-                                    <input type="text" x-model="item.search" @input="item.showDropdown = true"
-                                        @focus="item.showDropdown = true" placeholder="Ketik untuk cari barang jadi..."
-                                        class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
-                                    <input type="hidden" :name="'output['+index+'][product_id]'"
-                                        :value="item.product_id">
+                                <div class="w-full md:flex-1 relative" @click.away="item.showDropdown = false">
+                                    <label class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Barang
+                                        Jadi</label>
+                                    <div class="relative">
+                                        <input type="text" x-model="item.search" @click="item.showDropdown = true"
+                                            @focus="item.showDropdown = true" placeholder="Cari barang jadi..."
+                                            class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                                        <input type="hidden" :name="'output['+index+'][product_id]'"
+                                            :value="item.product_id">
 
-                                    <div x-show="item.showDropdown && filterProducts(item.search).length > 0"
-                                        x-transition
-                                        class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg max-h-40 overflow-y-auto">
-                                        <template x-for="opt in filterProducts(item.search)" :key="opt.id">
-                                            <div @click="selectProduct(item, opt)"
-                                                class="px-3 py-2 text-sm cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white">
-                                                <span x-text="opt.name + ' (' + opt.code + ')'"></span>
-                                                <span class="text-xs text-zinc-500 ml-2"
-                                                    x-text="'[' + opt.unit + ']'"></span>
+                                        <!-- Mobile Modal / Desktop Dropdown -->
+                                        <div x-show="item.showDropdown" x-transition
+                                            class="fixed inset-0 z-[60] bg-white dark:bg-zinc-800 md:absolute md:z-50 md:inset-auto md:w-full md:mt-1 md:rounded-lg md:shadow-lg md:border md:border-zinc-200 md:dark:border-zinc-700 md:max-h-60 overflow-hidden flex flex-col">
+
+                                            <!-- Mobile Header -->
+                                            <div
+                                                class="flex items-center justify-between p-3 border-b border-zinc-200 dark:border-zinc-700 md:hidden">
+                                                <span class="font-semibold text-zinc-900 dark:text-white">Pilih Barang
+                                                    Jadi</span>
+                                                <button type="button" @click="item.showDropdown = false"
+                                                    class="p-1 text-zinc-500">
+                                                    <i data-lucide="x" class="w-5 h-5"></i>
+                                                </button>
                                             </div>
-                                        </template>
+
+                                            <!-- Search Input (Mobile Sticky) -->
+                                            <div
+                                                class="p-2 border-b border-zinc-200 dark:border-zinc-700 md:hidden bg-zinc-50 dark:bg-zinc-900">
+                                                <input type="text" x-model="item.search"
+                                                    placeholder="Cari barang jadi..."
+                                                    class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white"
+                                                    @click.stop>
+                                            </div>
+
+                                            <!-- List -->
+                                            <div class="overflow-y-auto flex-1 md:max-h-60 p-2 md:p-0">
+                                                <template x-for="opt in filterProducts(item.search)" :key="opt.id">
+                                                    <div @click="selectProduct(item, opt)"
+                                                        class="px-3 py-3 md:py-2 text-sm cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 md:border-none">
+                                                        <div class="font-medium" x-text="opt.name"></div>
+                                                        <div class="text-xs text-zinc-500 flex gap-2">
+                                                            <span x-text="opt.code"></span>
+                                                            <span>•</span>
+                                                            <span x-text="opt.unit"></span>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <div x-show="filterProducts(item.search).length === 0"
+                                                    class="p-4 text-center text-sm text-zinc-500">
+                                                    Tidak ditemukan
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- Quantity -->
-                                <div class="w-24">
-                                    <input type="number" :name="'output['+index+'][quantity]'" x-model="item.quantity"
-                                        step="any" min="0.01"
-                                        placeholder="Qty" required
-                                        class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
-                                </div>
+                                <div class="flex gap-3 w-full md:w-auto">
+                                    <!-- Quantity -->
+                                    <div class="flex-1 md:w-24">
+                                        <label
+                                            class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Qty</label>
+                                        <input type="number" :name="'output['+index+'][quantity]'"
+                                            x-model="item.quantity" step="any" min="0.01" placeholder="Qty" required
+                                            class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                                    </div>
 
-                                <!-- Unit Display (Read-only) -->
-                                <div class="w-20">
-                                    <input type="text" :value="item.unit" readonly
-                                        class="w-full px-2 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 text-center">
-                                    <input type="hidden" :name="'output['+index+'][unit]'" :value="item.unit">
+                                    <!-- Unit Display (Read-only) -->
+                                    <div class="w-20 md:w-20">
+                                        <label
+                                            class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Satuan</label>
+                                        <input type="text" :value="item.unit" readonly
+                                            class="w-full px-2 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 text-center">
+                                        <input type="hidden" :name="'output['+index+'][unit]'" :value="item.unit">
+                                    </div>
                                 </div>
 
                                 <!-- Remove Button -->
-                                <button type="button" @click="outputItems.splice(index, 1)"
-                                    x-show="outputItems.length > 1"
-                                    class="px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
+                                <div class="flex justify-end w-full md:w-auto mt-2 md:mt-0">
+                                    <button type="button" @click="outputItems.splice(index, 1)"
+                                        x-show="outputItems.length > 1"
+                                        class="px-3 py-2 md:p-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg flex items-center gap-1">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        <span class="md:hidden">Hapus Item</span>
+                                    </button>
+                                </div>
                             </div>
                         </template>
                     </div>
@@ -172,9 +216,10 @@
 
                     filterProducts(search) {
                         if (!Array.isArray(this.outputOptions)) return [];
-                        if (!search) return this.outputOptions.slice(0, 10);
+                        // Always return all if no search (or top 10)
+                        if (!search) return this.outputOptions.slice(0, 20);
                         const s = search.toLowerCase();
-                        return this.outputOptions.filter(o => o.name.toLowerCase().includes(s) || o.code.toLowerCase().includes(s)).slice(0, 10);
+                        return this.outputOptions.filter(o => o.name.toLowerCase().includes(s) || o.code.toLowerCase().includes(s)).slice(0, 20);
                     },
 
                     selectProduct(item, opt) {

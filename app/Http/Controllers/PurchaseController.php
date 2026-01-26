@@ -270,6 +270,20 @@ class PurchaseController extends Controller
     }
 
     /**
+     * Remove the specified purchase.
+     */
+    public function destroy(Purchase $purchase)
+    {
+        if ($purchase->status !== 'draft') {
+            return back()->with('error', 'Hanya PO dengan status draft yang dapat dihapus.');
+        }
+
+        $purchase->delete(); // Items deleted via cascade or model boot if configured, but DB cascade handles it usually.
+
+        return redirect()->route('purchases.index')->with('success', 'Purchase Order berhasil dihapus.');
+    }
+
+    /**
      * Print purchase order.
      */
     public function print(Purchase $purchase)

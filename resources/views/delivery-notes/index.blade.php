@@ -1,6 +1,36 @@
 <x-app-layout>
     @section('title', 'Surat Jalan')
 
+    <style>
+        @media (min-width: 768px) {
+            #dn-mobile-view {
+                display: none !important;
+            }
+
+            #dn-desktop-view {
+                display: block !important;
+            }
+
+            [x-cloak] {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            #dn-mobile-view {
+                display: grid !important;
+            }
+
+            #dn-desktop-view {
+                display: none !important;
+            }
+
+            [x-cloak] {
+                display: none !important;
+            }
+        }
+    </style>
+
     <div x-data="deliveryNoteList()" x-cloak>
         <!-- Search & Filter -->
         <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 mb-4">
@@ -33,8 +63,9 @@
                 class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Buat Surat Jalan</a>
         </div>
 
-        <!-- Table -->
-        <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+        <!-- Desktop Table (Protected) -->
+        <div id="dn-desktop-view"
+            class="hidden md:block bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
@@ -97,6 +128,46 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Mobile Grid (Protected) -->
+        <div id="dn-mobile-view" class="grid grid-cols-1 gap-4 md:hidden">
+            <template x-for="note in filteredNotes()" :key="note.id">
+                <div
+                    class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 shadow-sm">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <a :href="'/delivery-notes/' + note.uuid"
+                                class="font-medium text-blue-600 dark:text-blue-400" x-text="note.sj_number"></a>
+                            <div class="text-xs text-zinc-500 mt-0.5" x-text="note.created_at_human"></div>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded-full" :class="{
+                            'bg-yellow-100 text-yellow-700': note.status === 'pending',
+                            'bg-blue-100 text-blue-700': note.status === 'approved',
+                            'bg-green-100 text-green-700': note.status === 'delivered',
+                            'bg-red-100 text-red-700': note.status === 'returned'
+                        }" x-text="note.status_label"></span>
+                    </div>
+
+                    <div class="mb-3 text-sm font-medium text-zinc-900 dark:text-white" x-text="note.customer_name">
+                    </div>
+
+                    <div
+                        class="flex justify-between items-center text-sm text-zinc-600 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-800 pt-3">
+                        <span x-text="note.items_count + ' items'"></span>
+                        <div class="flex gap-3">
+                            <a :href="'/delivery-notes/' + note.uuid"
+                                class="text-blue-600 dark:text-blue-400">Detail</a>
+                            <a :href="'/delivery-notes/' + note.uuid + '/print'"
+                                class="text-green-600 dark:text-green-400">Print</a>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <div x-show="filteredNotes().length === 0"
+                class="text-center p-8 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500">
+                Tidak ada surat jalan ditemukan
             </div>
         </div>
     </div>

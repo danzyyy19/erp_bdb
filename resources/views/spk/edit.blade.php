@@ -166,9 +166,9 @@
 
                     filterProducts(search) {
                         if (!Array.isArray(this.outputOptions)) return [];
-                        if (!search) return this.outputOptions.slice(0, 10);
+                        if (!search) return this.outputOptions.slice(0, 20);
                         const s = search.toLowerCase();
-                        return this.outputOptions.filter(o => o.name.toLowerCase().includes(s) || o.code.toLowerCase().includes(s)).slice(0, 10);
+                        return this.outputOptions.filter(o => o.name.toLowerCase().includes(s) || o.code.toLowerCase().includes(s)).slice(0, 20);
                     },
 
                     selectProduct(item, opt) {

@@ -26,7 +26,8 @@
                     <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4">
                         <p class="text-zinc-500 dark:text-zinc-400">Customer</p>
                         <p class="font-semibold text-zinc-900 dark:text-white">
-                            {{ $invoice->customer?->name ?? 'Walk-in' }}</p>
+                            {{ $invoice->customer?->name ?? 'Walk-in' }}
+                        </p>
                         <input type="hidden" name="customer_id" value="{{ $invoice->customer_id }}">
                     </div>
                     @if($invoice->deliveryNote)
@@ -92,69 +93,111 @@
                         Tambah Item
                     </button>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-zinc-50 dark:bg-zinc-800/50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase">No</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase">Produk
-                                </th>
-                                <th class="px-4 py-3 text-center text-xs font-semibold text-zinc-500 uppercase">Qty</th>
-                                <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-500 uppercase">Harga
-                                    Satuan</th>
-                                <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-500 uppercase">Subtotal
-                                </th>
-                                <th class="px-4 py-3 text-center text-xs font-semibold text-zinc-500 uppercase">Aksi
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                            <template x-for="(item, index) in items" :key="index">
-                                <tr>
-                                    <td class="px-4 py-3 text-zinc-600 dark:text-zinc-400" x-text="index + 1"></td>
-                                    <td class="px-4 py-3">
-                                        <select :name="'items[' + index + '][product_id]'" x-model="item.product_id"
-                                            @change="calculateTotals()" required
-                                            class="w-full px-2 py-1.5 rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm">
-                                            <option value="">-- Pilih Produk --</option>
-                                            @foreach($products as $product)
-                                                <option value="{{ $product->id }}"
-                                                    data-price="{{ $product->selling_price }}">{{ $product->name }}
-                                                    ({{ $product->code }})</option>
-                                            @endforeach
-                                        </select>
-                                        <input type="hidden" :name="'items[' + index + '][id]'" :value="item.id || ''">
-                                    </td>
-                                    <td class="px-4 py-3 text-center">
-                                        <input type="number" :name="'items[' + index + '][quantity]'"
-                                            x-model="item.quantity" step="0.01" min="0.01" required
-                                            @input="calculateTotals()"
-                                            class="w-20 px-2 py-1 text-center rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
-                                    </td>
-                                    <td class="px-4 py-3 text-right">
-                                        <input type="number" :name="'items[' + index + '][unit_price]'"
-                                            x-model="item.unit_price" step="1" min="0" required
-                                            @input="calculateTotals()"
-                                            class="w-32 px-2 py-1 text-right rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
-                                    </td>
-                                    <td class="px-4 py-3 text-right font-semibold text-zinc-900 dark:text-white"
-                                        x-text="formatRupiah(item.quantity * item.unit_price)">
-                                    </td>
-                                    <td class="px-4 py-3 text-center">
-                                        <button type="button" @click="removeItem(index)"
-                                            class="p-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors">
-                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </template>
-                            <tr x-show="items.length === 0">
-                                <td colspan="6" class="px-4 py-8 text-center text-zinc-500">
-                                    Belum ada item. Klik "Tambah Item" untuk menambahkan.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="space-y-3">
+                    <template x-for="(item, index) in items" :key="index">
+                        <div
+                            class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700 md:flex md:gap-4 md:items-start">
+                            <!-- Mobile Header: Number & Remove -->
+                            <div class="flex justify-between items-center mb-3 md:hidden">
+                                <span class="text-xs font-semibold text-zinc-500">Item #<span
+                                        x-text="index + 1"></span></span>
+                                <button type="button" @click="removeItem(index)" class="text-red-500">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+
+                            <!-- Number (Desktop) -->
+                            <div class="hidden md:block md:w-8 md:pt-2 text-center text-zinc-500 text-sm"
+                                x-text="index + 1"></div>
+
+                            <!-- Product Select -->
+                            <div class="w-full md:flex-1 relative" @click.away="item.showDropdown = false">
+                                <label class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Produk</label>
+                                <div class="relative">
+                                    <input type="text" x-model="item.search" @click="item.showDropdown = true"
+                                        @focus="item.showDropdown = true" placeholder="Cari produk..."
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                                    <input type="hidden" :name="'items[' + index + '][product_id]'"
+                                        :value="item.product_id">
+                                    <input type="hidden" :name="'items[' + index + '][id]'" :value="item.id || ''">
+
+                                    <!-- Dropdown/Modal -->
+                                    <div x-show="item.showDropdown" x-transition
+                                        class="fixed inset-0 z-[60] bg-white dark:bg-zinc-800 md:absolute md:z-50 md:inset-auto md:w-full md:mt-1 md:rounded-lg md:shadow-lg md:border md:border-zinc-200 md:dark:border-zinc-700 md:max-h-60 overflow-hidden flex flex-col">
+
+                                        <!-- Mobile Header -->
+                                        <div
+                                            class="flex items-center justify-between p-3 border-b border-zinc-200 dark:border-zinc-700 md:hidden">
+                                            <span class="font-semibold text-zinc-900 dark:text-white">Pilih
+                                                Produk</span>
+                                            <button type="button" @click="item.showDropdown = false"
+                                                class="p-1 text-zinc-500"><i data-lucide="x"
+                                                    class="w-5 h-5"></i></button>
+                                        </div>
+
+                                        <!-- Search (Mobile) -->
+                                        <div
+                                            class="p-2 border-b border-zinc-200 dark:border-zinc-700 md:hidden bg-zinc-50 dark:bg-zinc-900">
+                                            <input type="text" x-model="item.search" placeholder="Cari..."
+                                                class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white"
+                                                @click.stop>
+                                        </div>
+
+                                        <div class="overflow-y-auto flex-1 md:max-h-60 p-2 md:p-0">
+                                            <template x-for="p in filterProducts(item.search)" :key="p.id">
+                                                <div @click="selectProduct(item, p)"
+                                                    class="px-3 py-3 md:py-2 text-sm cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border-b border-zinc-100 dark:border-zinc-800 md:border-none">
+                                                    <div class="font-medium" x-text="p.name"></div>
+                                                    <div class="text-xs text-zinc-500 flex justify-between">
+                                                        <span x-text="p.code"></span>
+                                                        <span x-text="formatRupiah(p.price)"></span>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <div x-show="filterProducts(item.search).length === 0"
+                                                class="p-4 text-center text-sm text-zinc-500">Tidak ditemukan</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Qty & Price Row on Mobile -->
+                            <div class="grid grid-cols-2 gap-3 mt-3 md:mt-0 md:flex md:w-auto">
+                                <div class="md:w-24">
+                                    <label class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Qty</label>
+                                    <input type="number" :name="'items[' + index + '][quantity]'"
+                                        x-model="item.quantity" step="0.01" min="0.01" required
+                                        @input="calculateTotals()"
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-center">
+                                </div>
+                                <div class="md:w-32">
+                                    <label class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Harga</label>
+                                    <input type="number" :name="'items[' + index + '][unit_price]'"
+                                        x-model="item.unit_price" step="1" min="0" required @input="calculateTotals()"
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-right">
+                                </div>
+                            </div>
+
+                            <!-- Subtotal -->
+                            <div class="mt-3 md:mt-0 md:w-32 md:pt-2 md:text-right flex justify-between md:block">
+                                <span class="text-sm font-medium text-zinc-500 md:hidden">Subtotal</span>
+                                <span class="text-sm font-semibold text-zinc-900 dark:text-white"
+                                    x-text="formatRupiah(item.quantity * item.unit_price)"></span>
+                            </div>
+
+                            <!-- Desktop Remove -->
+                            <div class="hidden md:block md:w-10 md:pt-2 text-center">
+                                <button type="button" @click="removeItem(index)"
+                                    class="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 p-1.5 rounded transition-colors">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                    <div x-show="items.length === 0"
+                        class="p-8 text-center text-zinc-500 border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-lg">
+                        Belum ada item. Klik "Tambah Item" untuk menambahkan.
+                    </div>
                 </div>
             </div>
 
@@ -206,14 +249,22 @@
                 return {
                     items: [
                         @foreach($invoice->items as $item)
-                            {
+                                    {
                                 id: {{ $item->id }},
                                 product_id: {{ $item->product_id }},
                                 quantity: {{ $item->quantity }},
-                                unit_price: {{ $item->unit_price }}
+                                unit_price: {{ $item->unit_price }},
+                                search: '{{ $item->product->name }} ({{ $item->product->code }})',
+                                showDropdown: false
                             },
                         @endforeach
-                    ],
+                        ],
+                    products: @json($products->map(fn($p) => [
+                        'id' => $p->id,
+                        'name' => $p->name,
+                        'code' => $p->code,
+                        'price' => $p->selling_price
+                    ])),
                     taxPercent: {{ $invoice->tax_percent }},
                     discount: {{ $invoice->discount }},
                     subtotal: 0,
@@ -234,7 +285,9 @@
                             id: null,
                             product_id: '',
                             quantity: 1,
-                            unit_price: 0
+                            unit_price: 0,
+                            search: '',
+                            showDropdown: false
                         });
                         this.$nextTick(() => {
                             if (typeof lucide !== 'undefined') {
@@ -261,6 +314,20 @@
 
                     formatRupiah(amount) {
                         return 'Rp ' + Number(amount).toLocaleString('id-ID');
+                    },
+
+                    filterProducts(search) {
+                        if (!search) return this.products.slice(0, 20);
+                        const s = search.toLowerCase();
+                        return this.products.filter(p => p.name.toLowerCase().includes(s) || p.code.toLowerCase().includes(s)).slice(0, 20);
+                    },
+
+                    selectProduct(item, product) {
+                        item.product_id = product.id;
+                        item.unit_price = product.price;
+                        item.search = product.name + ' (' + product.code + ')';
+                        item.showDropdown = false;
+                        this.calculateTotals();
                     }
                 }
             }
