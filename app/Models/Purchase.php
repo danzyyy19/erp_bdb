@@ -22,6 +22,7 @@ class Purchase extends Model
         'discount',
         'total_amount',
         'status',
+        'payment_terms',
         'created_by',
         'approved_by',
         'approved_at',

@@ -40,10 +40,17 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Email</label>
-                    <input type="email" name="email" value="{{ old('email', $supplier->email) }}"
-                        class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Fax</label>
+                        <input type="text" name="fax" value="{{ old('fax', $supplier->fax) }}"
+                            class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Email</label>
+                        <input type="email" name="email" value="{{ old('email', $supplier->email) }}"
+                            class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                    </div>
                 </div>
 
                 <div>

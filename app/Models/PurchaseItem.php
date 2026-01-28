@@ -14,7 +14,10 @@ class PurchaseItem extends Model
         'purchase_id',
         'product_id',
         'quantity',
+        'unit',
         'unit_price',
+        'unit_price_usd',
+        'conversion_rate',
         'total',
         'notes',
     ];

@@ -21,7 +21,8 @@
                 inset: auto !important;
                 width: 100% !important;
                 height: auto !important;
-                max-height: 15rem !important; /* h-60 */
+                max-height: 15rem !important;
+                /* h-60 */
                 border-radius: 0.5rem !important;
                 margin-top: 0.25rem !important;
             }
@@ -35,7 +36,7 @@
             <form action="{{ route('purchases.store') }}" method="POST" x-data="purchaseForm()">
                 @csrf
 
-                <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="grid grid-cols-5 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Tanggal <span
                                 class="text-red-500">*</span></label>
@@ -59,6 +60,19 @@
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">PPN (%)</label>
                         <input type="number" name="tax_percentage" value="{{ old('tax_percentage', 11) }}" step="0.1"
                             min="0"
+                            class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Syarat
+                            Pembayaran</label>
+                        <input type="text" name="payment_terms" value="{{ old('payment_terms') }}"
+                            placeholder="Contoh: Net 30 Days"
+                            class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Diskon
+                            (IDR)</label>
+                        <input type="number" name="discount" value="{{ old('discount', 0) }}" step="0.01" min="0"
                             class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
                     </div>
                 </div>
@@ -98,7 +112,7 @@
 
                                 <!-- Dropdown / Mobile Modal -->
                                 <div id="material-dropdown-content" x-show="open" x-transition
-                                     class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-xl overflow-hidden overflow-y-auto">
+                                    class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-xl overflow-hidden overflow-y-auto">
 
                                     <!-- Mobile Header -->
                                     <div
@@ -119,7 +133,7 @@
                                             x-for="product in products.filter(p => !search || p.text.toLowerCase().includes(search.toLowerCase()))"
                                             :key="product.id">
                                             <button type="button"
-                                                @click="item.product_id = product.id; open = false; search = ''"
+                                                @click="item.product_id = product.id; item.unit = product.unit; open = false; search = ''"
                                                 class="w-full px-3 py-3 text-left hover:bg-zinc-100 dark:hover:bg-zinc-700 border-b border-zinc-100 dark:border-zinc-700/50 rounded-lg md:rounded-none mb-1 md:mb-0"
                                                 :class="item.product_id == product.id && 'bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500 md:ring-0'">
                                                 <div class="font-medium text-sm text-zinc-900 dark:text-white"
@@ -139,16 +153,36 @@
 
                             <div class="grid grid-cols-2 gap-3 md:flex md:gap-3">
                                 <div class="w-full md:w-24">
+                                    <label class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Satuan</label>
+                                    <input type="text" :name="'items['+index+'][unit]'" x-model="item.unit"
+                                        placeholder="Satuan"
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                                </div>
+                                <div class="w-full md:w-24">
                                     <label class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Qty</label>
                                     <input type="number" :name="'items['+index+'][quantity]'" step="0.01" min="0.01"
                                         required x-model="item.quantity" placeholder="Qty"
                                         class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
                                 </div>
+                                <div class="w-full md:w-28">
+                                    <label class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Harga
+                                        ($)</label>
+                                    <input type="number" :name="'items['+index+'][unit_price_usd]'" step="0.01" min="0"
+                                        x-model="item.unit_price_usd" @input="calculateIDR(item)" placeholder="USD"
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                                </div>
+                                <div class="w-full md:w-32">
+                                    <label class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Kurs</label>
+                                    <input type="number" :name="'items['+index+'][conversion_rate]'" step="1" min="0"
+                                        x-model="item.conversion_rate" @input="calculateIDR(item)"
+                                        placeholder="Kurs IDR"
+                                        class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
+                                </div>
                                 <div class="w-full md:w-36">
                                     <label class="block text-xs font-medium text-zinc-500 mb-1 md:hidden">Harga
-                                        Satuan</label>
+                                        (IDR)</label>
                                     <input type="number" :name="'items['+index+'][unit_price]'" step="1" min="0"
-                                        required x-model="item.unit_price" placeholder="Harga"
+                                        required x-model="item.unit_price" placeholder="Harga IDR"
                                         class="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white">
                                 </div>
                             </div>
@@ -186,16 +220,21 @@
         <script>
             function purchaseForm() {
                 return {
-                    items: [{ product_id: '', quantity: '', unit_price: '' }],
+                    items: [{ product_id: '', unit: '', quantity: '', unit_price: '', unit_price_usd: '', conversion_rate: '' }],
                     products: @js($products->map(fn($p) => ['id' => $p->id, 'text' => $p->code . ' - ' . $p->name, 'stock' => $p->current_stock, 'unit' => $p->unit])),
                     addItem() {
-                        this.items.push({ product_id: '', quantity: '', unit_price: '' });
+                        this.items.push({ product_id: '', unit: '', quantity: '', unit_price: '', unit_price_usd: '', conversion_rate: '' });
                     },
                     removeItem(index) {
                         this.items.splice(index, 1);
                     },
                     formatRupiah(amount) {
                         return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+                    },
+                    calculateIDR(item) {
+                        if (item.unit_price_usd && item.conversion_rate) {
+                            item.unit_price = item.unit_price_usd * item.conversion_rate;
+                        }
                     }
                 }
             }

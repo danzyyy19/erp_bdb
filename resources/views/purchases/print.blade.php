@@ -8,7 +8,8 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 15mm 10mm 10mm 10mm;
+            margin: 15mm;
+            /* More margin from edge */
         }
 
         * {
@@ -19,381 +20,487 @@
 
         body {
             font-family: Arial, sans-serif;
-            font-size: 11px;
-            line-height: 1.4;
-            background: #f0f0f0;
+            font-size: 10px;
+            line-height: 1.2;
+            /* Balanced tight spacing */
+            background: white;
+            color: #000;
         }
 
-        .print-container {
-            background: white;
+        .container {
+            width: 100%;
             max-width: 210mm;
             margin: 0 auto;
-            padding: 10mm;
+            border: 2px solid #000;
+            padding: 15px;
+            /* Internal spacing from border */
+            /* height: 98vh; removed default height to avoid overflow issues */
+            /* Removed min-height so border fits content */
+            position: relative;
         }
 
         /* HEADER */
         .header {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
+            /* Center logo with text */
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
             margin-bottom: 15px;
+            gap: 20px;
+            /* Gap between logo and text */
         }
 
-        .logo-section {
+        /* ... logo ... */
+        .logo {
             width: 80px;
+            margin-right: 15px;
+            flex-shrink: 0;
         }
 
-        .logo-section img {
-            width: 70px;
+        .logo img {
+            width: 100%;
             height: auto;
         }
 
-        .company-section {
+        .company-info {
             flex: 1;
         }
 
         .company-name {
-            font-size: 22px;
-            font-weight: bold;
-            color: #c41e3a;
-            font-family: 'Times New Roman', serif;
+            font-size: 20px;
+            /* Larger */
+            font-weight: 900;
+            /* Extra Bold */
+            color: #c00;
+            font-family: "Times New Roman", Times, serif;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
         }
 
-        .company-tagline {
-            font-size: 10px;
+        .company-sub {
             font-style: italic;
-            color: #333;
+            color: #c00;
+            font-size: 11px;
+            margin-bottom: 3px;
+            font-weight: bold;
         }
 
         .company-address {
-            font-size: 9px;
-            color: #333;
-            margin-top: 3px;
+            font-size: 10px;
+            color: #000;
+            line-height: 1.2;
+        }
+
+        /* ... company text ... */
+
+        /* PO TITLE */
+        .po-title-section {
+            text-align: center;
+            margin: 20px 0 30px 0;
         }
 
         .po-title {
-            text-align: right;
-            font-size: 28px;
-            font-weight: bold;
-            color: #c41e3a;
-            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 900;
+            /* Extra Bold */
+            text-transform: uppercase;
+            text-decoration: underline;
+            text-decoration-style: double;
+            border-bottom: 4px double #000;
+            /* Thicker double line */
+            display: inline-block;
+            padding-bottom: 3px;
+            font-family: "Times New Roman", Times, serif;
+            /* Match style */
         }
 
-        /* INFO SECTION */
-        .info-section {
+        /* INFO GRID */
+        .info-grid {
             display: flex;
-            gap: 20px;
-            margin: 15px 0;
-            font-size: 10px;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 11px;
+            /* Slightly larger for readability */
         }
 
-        .info-left {
-            flex: 1;
-        }
-
+        .info-left,
         .info-right {
-            width: 250px;
-            border: 1px solid #000;
+            width: 48%;
         }
 
         .info-row {
-            display: flex;
-            margin-bottom: 3px;
+            display: grid;
+            grid-template-columns: 100px 15px 1fr;
+            /* Fixed widths: Label | : | Value */
+            margin-bottom: 4px;
+            align-items: flex-start;
         }
 
-        .info-label {
-            width: 80px;
+        .info-row.one-line {
+            grid-template-columns: 1fr;
+        }
+
+        .info-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .label {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .colon {
+            text-align: center;
             font-weight: bold;
         }
 
-        .info-value {
-            flex: 1;
+        .value {
+            /* flex: 1 managed by grid */
+            font-weight: normal;
         }
 
-        .info-right-row {
-            display: flex;
-            border-bottom: 1px solid #ddd;
-            padding: 4px 8px;
-        }
-
-        .info-right-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-right-label {
-            width: 110px;
-            font-weight: bold;
-        }
-
-        .info-right-value {
-            flex: 1;
+        .value-address {
+            white-space: pre-line;
+            line-height: 1.2;
         }
 
         /* TABLE */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
+            border: 2px solid #000;
+            margin-bottom: 15px;
         }
 
-        table th {
-            background: transparent;
+        th,
+        td {
             border: 1px solid #000;
-            padding: 8px 5px;
+            padding: 5px;
             font-size: 10px;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            /* Light gray header optional */
+            background-color: transparent;
             font-weight: bold;
             text-align: center;
         }
 
-        table td {
-            border: 1px solid #000;
-            padding: 6px 5px;
-            font-size: 10px;
-        }
-
-        .text-center {
+        .col-no {
+            width: 30px;
             text-align: center;
         }
 
-        .text-right {
+        .col-item {}
+
+        .col-qty {
+            width: 60px;
+            text-align: center;
+        }
+
+        .col-unit {
+            width: 60px;
+            text-align: center;
+        }
+
+        .col-price {
+            width: 180px;
+            text-align: center;
+        }
+
+        .col-total {
+            width: 100px;
             text-align: right;
         }
 
-        /* SUMMARY */
-        .summary-section {
-            width: 280px;
-            margin-left: auto;
+        /* FOOTER SUMMARY & TERBILANG */
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            border: 2px solid #000;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .terbilang-box {
+            flex: 1;
+            padding: 5px;
+            border-right: 2px solid #000;
+            font-style: italic;
+            font-weight: bold;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .summary-box {
+            width: 300px;
         }
 
         .summary-row {
             display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            font-size: 10px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #000;
         }
 
-        .summary-row.total {
-            font-weight: bold;
-            font-size: 12px;
-            border-top: 2px solid #000;
+        .summary-row:last-child {
             border-bottom: none;
-            padding-top: 8px;
         }
 
-        /* NOTES */
-        .notes-section {
-            margin: 20px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            font-size: 10px;
-        }
-
-        .notes-title {
+        .summary-label {
+            flex: 1;
+            padding: 3px 5px;
             font-weight: bold;
-            margin-bottom: 5px;
+            border-right: 1px solid #000;
+        }
+
+        .summary-val {
+            width: 100px;
+            padding: 3px 5px;
+            text-align: right;
         }
 
         /* SIGNATURE */
         .signature-section {
             display: flex;
             justify-content: space-between;
-            margin-top: 40px;
+            margin-top: 30px;
+            padding: 0 40px;
         }
 
-        .signature-box {
+        .sig-block {
             text-align: center;
-            width: 30%;
+            width: 150px;
         }
 
-        .signature-title {
+        .sig-title {
             font-weight: bold;
-            font-size: 10px;
-            margin-bottom: 60px;
+            margin-bottom: 50px;
         }
 
-        .signature-name {
+        .sig-name {
             font-weight: bold;
-            font-size: 10px;
-            border-top: 1px solid #000;
-            padding-top: 5px;
+            /* text-decoration: underline; */
         }
 
-        /* PRINT BUTTONS */
         .print-buttons {
-            text-align: center;
-            padding: 15px;
-            background: #f3f4f6;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-
-        .print-buttons button {
-            padding: 10px 25px;
-            font-size: 13px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            margin: 0 5px;
-        }
-
-        .btn-print {
-            background: #c41e3a;
-            color: white;
-        }
-
-        .btn-close {
-            background: #6b7280;
-            color: white;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
         }
 
         @media print {
-            body {
-                background: white;
-            }
-
-            .print-container {
-                padding: 0;
-            }
-
             .print-buttons {
                 display: none;
+            }
+
+            @page {
+                margin: 0;
+            }
+
+            body {
+                margin: 10mm;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="print-container">
-        <div class="print-buttons">
-            <button class="btn-print" onclick="window.print()">Print PO</button>
-            <button class="btn-close" onclick="window.close()">Tutup</button>
-            <span style="margin-left: 20px; color: #666;">Format: A4 Portrait</span>
-        </div>
 
+    <!-- PRINT BUTTONS -->
+    <div class="print-buttons">
+        <button onclick="window.print()"
+            style="padding: 10px 20px; background: #c00; color: white; border: none; cursor: pointer;">Print</button>
+    </div>
+
+    <div class="container">
         <!-- HEADER -->
         <div class="header">
-            <div class="logo-section">
-                <img src="{{ asset('images/logo-bdb.png') }}" alt="Logo">
+            <div class="logo">
+                <!-- Replace with actual logo path -->
+                <img src="{{ asset('images/logo-bdb.png') }}" alt="LOGO">
             </div>
-            <div class="company-section">
+            <div class="company-info">
                 <div class="company-name">CV. BERKAH DOA BUNDA</div>
-                <div class="company-tagline">Epoxy Coating Specialist, Manufactur and Trading Chemical</div>
+                <div class="company-sub">Epoxy Coating Specialist, Manufactur and Trading Chemical</div>
                 <div class="company-address">
-                    Jl. Diklat Pemda RT.001/RW.015 No. 6 Sukabakti - Curug - Tangerang<br>
-                    Phone: 0852-1271-4789<br>
-                    Email: cv.berkahdoabunda@gmail.com
+                    Jl. Diklat Pemda RT.001/RW.015 Sukabakti - Curug - Tangerang<br>
+                    Phone: 0852-1271-4789 Email: cv.berkahdoabunda@gmail.com
                 </div>
             </div>
-            <div class="po-title">PURCHASE ORDER</div>
         </div>
 
-        <!-- INFO SECTION -->
-        <div class="info-section">
+        <!-- TITLE -->
+        <div class="po-title-section">
+            <span class="po-title">PURCHASE ORDER</span>
+        </div>
+
+        <!-- INFO -->
+        <div class="info-grid">
             <div class="info-left">
-                <div style="font-weight: bold; margin-bottom: 5px;">KEPADA:</div>
+                <div class="info-row full">
+                    <!-- Special case for date if needed, or keep standard -->
+                    <div style="font-weight: bold;">TANGERANG, {{ $purchase->purchase_date->translatedFormat('d F Y') }}
+                    </div>
+                </div>
+
+                <div style="margin-top: 5px;"></div>
+
                 <div class="info-row">
-                    <span class="info-label">SUPPLIER</span>
-                    <span class="info-value">: {{ $purchase->supplier?->name ?? '-' }}</span>
+                    <div class="label">KEPADA</div>
+                    <div class="colon">:</div>
+                    <div class="value">{{ $purchase->supplier->name }}</div>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">ALAMAT</span>
-                    <span class="info-value">: {{ $purchase->supplier?->address ?? '-' }}</span>
+                    <div class="label"></div>
+                    <div class="colon"></div>
+                    <div class="value">{{ $purchase->supplier->contact_name ?? '' }}</div>
+                </div>
+
+                <div style="margin-top: 5px;"></div>
+
+                <div class="info-row">
+                    <div class="label">EMAIL</div>
+                    <div class="colon">:</div>
+                    <div class="value">{{ $purchase->supplier->email ?? '-' }}</div>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">TELP/HP</span>
-                    <span class="info-value">: {{ $purchase->supplier?->phone ?? '-' }}</span>
+                    <div class="label">FAX</div>
+                    <div class="colon">:</div>
+                    <div class="value">{{ $purchase->supplier->fax ?? '-' }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="label">PAYMENT</div>
+                    <div class="colon">:</div>
+                    <div class="value">{{ $purchase->payment_terms ?? '-' }}</div>
                 </div>
             </div>
+
             <div class="info-right">
-                <div class="info-right-row">
-                    <span class="info-right-label">PO NO.</span>
-                    <span class="info-right-value">: {{ $purchase->purchase_number }}</span>
+                <div class="info-row">
+                    <div class="label">NO. PO</div>
+                    <div class="colon">:</div>
+                    <div class="value">{{ $purchase->purchase_number }}</div>
                 </div>
-                <div class="info-right-row">
-                    <span class="info-right-label">TANGGAL</span>
-                    <span class="info-right-value">: {{ $purchase->purchase_date->translatedFormat('d F Y') }}</span>
+                <div class="info-row">
+                    <div class="label">TO</div>
+                    <div class="colon">:</div>
+                    <div class="value">CV. BERKAH DOA BUNDA</div>
                 </div>
-                <div class="info-right-row">
-                    <span class="info-right-label">STATUS</span>
-                    <span class="info-right-value">: {{ strtoupper($purchase->status) }}</span>
+                <div class="info-row">
+                    <div class="label"></div>
+                    <div class="colon"></div>
+                    <div class="value">BpK Mulyadi [0852-1271-4789]</div>
+                </div>
+                <div class="info-row">
+                    <div class="label">NPWP</div>
+                    <div class="colon">:</div>
+                    <div class="value">93.735.766.3-452.000</div>
+                </div>
+                <div class="info-row">
+                    <div class="label">EMAIL</div>
+                    <div class="colon">:</div>
+                    <div class="value">cv.berkahdoabunda@gmail.com</div>
+                </div>
+                <div class="info-row">
+                    <div class="label">DELIVERY</div>
+                    <div class="colon">:</div>
+                    <div class="value-address">Jl. Diklat Pemda Kp. Badodon RT001/RW.015 NO.06/08 Curug</div>
                 </div>
             </div>
         </div>
 
-        <!-- ITEMS TABLE -->
+        <!-- TABLE -->
         <table>
             <thead>
                 <tr>
-                    <th style="width: 30px;">NO.</th>
-                    <th>NAMA BARANG</th>
-                    <th style="width: 80px;">KODE</th>
-                    <th style="width: 60px;">QTY</th>
-                    <th style="width: 60px;">SATUAN</th>
-                    <th style="width: 100px;">HARGA</th>
-                    <th style="width: 100px;">TOTAL</th>
+                    <th rowspan="2" class="col-no">NO</th>
+                    <th rowspan="2" class="col-item">NAMA BARANG</th>
+                    <th rowspan="2" class="col-qty">QTY</th>
+                    <th rowspan="2" class="col-unit">SATUAN</th>
+                    <th colspan="3" class="col-price">UNIT PRICE</th>
+                    <th rowspan="2" class="col-total">TOTAL</th>
+                </tr>
+                <tr>
+                    <th style="font-size: 9px; width: 40px;">$</th>
+                    <th style="font-size: 9px; width: 60px;">KURS</th>
+                    <th style="font-size: 9px; width: 80px;">IDR/Kg</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($purchase->items as $key => $item)
+                @foreach($purchase->items as $index => $item)
                     <tr>
-                        <td class="text-center">{{ $key + 1 }}</td>
-                        <td>{{ $item->product->name ?? '-' }}</td>
-                        <td class="text-center">{{ $item->product->code ?? '-' }}</td>
-                        <td class="text-center">{{ number_format((float) $item->quantity, 2) }}</td>
-                        <td class="text-center">{{ $item->product->unit ?? '-' }}</td>
-                        <td class="text-right">{{ number_format((float) $item->unit_price, 0, ',', '.') }}</td>
-                        <td class="text-right">{{ number_format((float) $item->total, 0, ',', '.') }}</td>
+                        <td class="col-no text-center">{{ $index + 1 }}</td>
+                        <td class="col-item">{{ $item->product->name }}</td>
+                        <td class="col-qty text-center">{{ number_format($item->quantity + 0, 0, ',', '.') }}</td>
+                        <td class="col-unit text-center">{{ $item->unit ?? $item->product->unit ?? '-' }}</td>
+                        <td class="text-center">{{ $item->unit_price_usd ? number_format($item->unit_price_usd, 2) : '-' }}
+                        </td>
+                        <td class="text-center">
+                            {{ $item->conversion_rate ? 'Rp ' . number_format($item->conversion_rate, 0, ',', '.') : '-' }}
+                        </td>
+                        <td class="text-right">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
+                        <td class="col-total text-right">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
 
-        <!-- SUMMARY -->
-        <div class="summary-section">
-            <div class="summary-row">
-                <span>SUBTOTAL</span>
-                <span>Rp {{ number_format((float) $purchase->subtotal, 0, ',', '.') }}</span>
+        <!-- FOOTER: TERBILANG & SUMMARY -->
+        <div class="footer-section">
+            <div class="terbilang-box">
+                TERBILANG : # {{ ucwords($terbilang) }} Rupiah #
             </div>
-            <div class="summary-row">
-                <span>PPN ({{ number_format((float) $purchase->tax_percentage, 0) }}%)</span>
-                <span>Rp {{ number_format((float) $purchase->tax, 0, ',', '.') }}</span>
-            </div>
-            @if((float) $purchase->discount > 0)
+            <div class="summary-box">
                 <div class="summary-row">
-                    <span>DISKON</span>
-                    <span>- Rp {{ number_format((float) $purchase->discount, 0, ',', '.') }}</span>
+                    <div class="summary-label">SUB TOTAL</div>
+                    <div class="summary-val">Rp {{ number_format($purchase->subtotal, 0, ',', '.') }}</div>
                 </div>
-            @endif
-            <div class="summary-row total">
-                <span>GRAND TOTAL</span>
-                <span>Rp {{ number_format((float) $purchase->total_amount, 0, ',', '.') }}</span>
+                <div class="summary-row">
+                    <div class="summary-label">DISCOUNT</div>
+                    <div class="summary-val">Rp {{ number_format($purchase->discount, 0, ',', '.') }}</div>
+                </div>
+                {{-- Down Payment row not in DB, skipping or showing 0 --}}
+
+                <div class="summary-row">
+                    <div class="summary-label">DPP</div>
+                    <div class="summary-val">Rp
+                        {{ number_format($purchase->subtotal - $purchase->discount, 0, ',', '.') }}
+                    </div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">PPN {{ $purchase->tax_percentage + 0 }}%</div>
+                    <div class="summary-val">Rp {{ number_format($purchase->tax, 0, ',', '.') }}</div>
+                </div>
+                <div class="summary-row" style="border-top: 1px solid #000;">
+                    <div class="summary-label" style="font-weight: bold;">TOTAL AMOUNT</div>
+                    <div class="summary-val" style="font-weight: bold;">Rp
+                        {{ number_format($purchase->total_amount, 0, ',', '.') }}
+                    </div>
+                </div>
             </div>
         </div>
-
-        @if($purchase->notes)
-            <!-- NOTES -->
-            <div class="notes-section">
-                <div class="notes-title">CATATAN:</div>
-                <div>{{ $purchase->notes }}</div>
-            </div>
-        @endif
 
         <!-- SIGNATURE -->
         <div class="signature-section">
-            <div class="signature-box">
-                <div class="signature-title">DIBUAT OLEH</div>
-                <div class="signature-name">{{ $purchase->creator?->name ?? '-' }}</div>
+            <div class="sig-block">
+                <div class="sig-title">Penerima PO</div>
+                <br><br><br>
+                <div class="sig-name">(
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    )</div>
             </div>
-            <div class="signature-box">
-                <div class="signature-title">DISETUJUI OLEH</div>
-                <div class="signature-name">{{ $purchase->approver?->name ?? '-' }}</div>
-            </div>
-            <div class="signature-box">
-                <div class="signature-title">PENERIMA PO (SUPPLIER)</div>
-                <div class="signature-name">{{ $purchase->supplier?->name ?? '-' }}</div>
+            <div class="sig-block">
+                <div class="sig-title">Dibuat Oleh,</div>
+                <br><br><br>
+                <div class="sig-name">{{ strtoupper($purchase->creator->name ?? 'ADMIN') }}</div>
             </div>
         </div>
+
     </div>
+
 </body>
 
 </html>

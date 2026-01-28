@@ -70,11 +70,15 @@ class PurchaseController extends Controller
             'purchase_date' => 'required|date',
             'tax_percentage' => 'nullable|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
+            'payment_terms' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
+            'items.*.unit' => 'nullable|string|max:50',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.unit_price_usd' => 'nullable|numeric|min:0',
+            'items.*.conversion_rate' => 'nullable|numeric|min:0',
         ]);
 
         // Calculate totals
@@ -95,6 +99,7 @@ class PurchaseController extends Controller
             'tax' => $taxAmount, // Save calculated amount
             'discount' => $discount,
             'total_amount' => $totalAmount,
+            'payment_terms' => $validated['payment_terms'],
             'notes' => $validated['notes'],
             'status' => 'draft',
             'created_by' => auth()->id(),
@@ -104,8 +109,11 @@ class PurchaseController extends Controller
             $subtotalItem = $item['quantity'] * $item['unit_price'];
             $purchase->items()->create([
                 'product_id' => $item['product_id'],
+                'unit' => $item['unit'] ?? null,
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['unit_price'],
+                'unit_price_usd' => $item['unit_price_usd'] ?? null,
+                'conversion_rate' => $item['conversion_rate'] ?? null,
                 'total' => $subtotalItem,
             ]);
         }
@@ -154,11 +162,15 @@ class PurchaseController extends Controller
             'purchase_date' => 'required|date',
             'tax_percentage' => 'nullable|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
+            'payment_terms' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
+            'items.*.unit' => 'nullable|string|max:50',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.unit_price_usd' => 'nullable|numeric|min:0',
+            'items.*.conversion_rate' => 'nullable|numeric|min:0',
         ]);
 
         // Calculate totals
@@ -179,6 +191,7 @@ class PurchaseController extends Controller
             'tax' => $taxAmount, // Save calculated amount
             'discount' => $discount,
             'total_amount' => $totalAmount,
+            'payment_terms' => $validated['payment_terms'],
             'notes' => $validated['notes'],
         ]);
 
@@ -188,8 +201,11 @@ class PurchaseController extends Controller
             $subtotalItem = $item['quantity'] * $item['unit_price'];
             $purchase->items()->create([
                 'product_id' => $item['product_id'],
+                'unit' => $item['unit'] ?? null,
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['unit_price'],
+                'unit_price_usd' => $item['unit_price_usd'] ?? null,
+                'conversion_rate' => $item['conversion_rate'] ?? null,
                 'total' => $subtotalItem,
             ]);
         }
@@ -289,7 +305,37 @@ class PurchaseController extends Controller
     public function print(Purchase $purchase)
     {
         $purchase->load(['supplier', 'creator', 'approver', 'items.product']);
+        $terbilang = $this->terbilang($purchase->total_amount);
 
-        return view('purchases.print', compact('purchase'));
+        return view('purchases.print', compact('purchase', 'terbilang'));
+    }
+
+    private function terbilang($nilai)
+    {
+        $nilai = abs($nilai);
+        $huruf = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+        $temp = "";
+        if ($nilai < 12) {
+            $temp = " " . $huruf[$nilai];
+        } else if ($nilai < 20) {
+            $temp = $this->terbilang($nilai - 10) . " belas";
+        } else if ($nilai < 100) {
+            $temp = $this->terbilang($nilai / 10) . " puluh" . $this->terbilang($nilai % 10);
+        } else if ($nilai < 200) {
+            $temp = " seratus" . $this->terbilang($nilai - 100);
+        } else if ($nilai < 1000) {
+            $temp = $this->terbilang($nilai / 100) . " ratus" . $this->terbilang($nilai % 100);
+        } else if ($nilai < 2000) {
+            $temp = " seribu" . $this->terbilang($nilai - 1000);
+        } else if ($nilai < 1000000) {
+            $temp = $this->terbilang($nilai / 1000) . " ribu" . $this->terbilang($nilai % 1000);
+        } else if ($nilai < 1000000000) {
+            $temp = $this->terbilang($nilai / 1000000) . " juta" . $this->terbilang($nilai % 1000000);
+        } else if ($nilai < 1000000000000) {
+            $temp = $this->terbilang($nilai / 1000000000) . " milyar" . $this->terbilang(fmod($nilai, 1000000000));
+        } else if ($nilai < 1000000000000000) {
+            $temp = $this->terbilang($nilai / 1000000000000) . " trilyun" . $this->terbilang(fmod($nilai, 1000000000000));
+        }
+        return $temp;
     }
 }
